@@ -31,15 +31,27 @@ class Marketplace:
 
 
 class Client:
-    def __init__(self, name, is_museum, location="Private Collection"):
+    def __init__(self, name, is_museum, wallet, location="Private Collection"):
         self.name = name
         self.location = location
         self.is_museum = is_museum
+        self.wallet = wallet
 
     def sell_artwork(self, artwork, price):
         if artwork.owner == self:
-            listing = [artwork, "${}M (USD)".format(price), self.name]
+            listing = Listing(artwork, price, self.name)
             veneer.add_listings(listing)
+
+    def buy_artwork(self, artwork):
+        if artwork.owner != self:
+            count = 0
+            for listing in veneer.listings:
+                if listing.art == artwork:
+                    self.wallet -= listing.price
+                    artwork.owner.wallet += listing.price
+                    artwork.owner = self
+                    veneer.remove_listing(listing)
+                count += 1
 
 
 class Listing:
@@ -49,22 +61,39 @@ class Listing:
         self.seller = seller
 
     def __repr__(self):
-        return "\"{name}\", The price: ${price}M (USD).".format(name=self.art.name, price=self.price)
+        return "\"{name}\", The price: ${price}M (USD).".format(name=self.art.title, price=self.price)
 
 
 veneer = Marketplace()
 
 # print(veneer.show_listings())
 
-edytta = Client("Edytta Halpirt", False)
-moma = Client("The MOMA", "New York", True)
+edytta = Client("Edytta Halpirt", False, 10)
+moma = Client("The MOMA", True, 10, "New York")
 
 girl_with_mandolin = Art("Picasso, Pablo", "Girl with a Mandolin (Fanny Tellier)", 1910, "oil in canvas", edytta)
 
 # print(girl_with_mandolin)
+print("${}M (USD).".format(moma.wallet))
+print("${}M (USD).".format(edytta.wallet))
 
 edytta.sell_artwork(girl_with_mandolin, 6)
+
+moma.buy_artwork(girl_with_mandolin)
+
+print(girl_with_mandolin)
+
 veneer.show_listings()
+
+print("${}M (USD).".format(moma.wallet))
+print("${}M (USD).".format(edytta.wallet))
+
+
+
+
+
+
+
 
 
 
