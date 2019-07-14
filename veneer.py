@@ -20,10 +20,10 @@ class Marketplace:
         self.listings = []
 
     def add_listings(self, new_listing):
-        self.listing.append(new_listing)
+        self.listings.append(new_listing)
 
     def remove_listing(self, listing):
-        self.listing.remove(listing)
+        self.listings.remove(listing)
 
     def show_listings(self):
         for listing in self.listings:
@@ -36,6 +36,21 @@ class Client:
         self.location = location
         self.is_museum = is_museum
 
+    def sell_artwork(self, artwork, price):
+        if artwork.owner == self:
+            listing = [artwork, "${}M (USD)".format(price), self.name]
+            veneer.add_listings(listing)
+
+
+class Listing:
+    def __init__(self, art, price, seller):
+        self.art = art
+        self.price = price
+        self.seller = seller
+
+    def __repr__(self):
+        return "\"{name}\", The price: ${price}M (USD).".format(name=self.art.name, price=self.price)
+
 
 veneer = Marketplace()
 
@@ -46,7 +61,10 @@ moma = Client("The MOMA", "New York", True)
 
 girl_with_mandolin = Art("Picasso, Pablo", "Girl with a Mandolin (Fanny Tellier)", 1910, "oil in canvas", edytta)
 
-print(girl_with_mandolin)
+# print(girl_with_mandolin)
+
+edytta.sell_artwork(girl_with_mandolin, 6)
+veneer.show_listings()
 
 
 
